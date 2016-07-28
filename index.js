@@ -11,8 +11,7 @@ if (!maxNotifyDistance) maxNotifyDistance = "250";
 var notifyFilter = localStorage.getItem("notifyFilter");
 if (!notifyFilter) notifyFilter = "|";
 
-$(document).ready(function() {
-
+function z_loadContent() {
     var content = `
         <div id="z_contentContainer">
             <a class="z_toggle autoScan">Auto Scan</a><br>
@@ -30,7 +29,7 @@ $(document).ready(function() {
             <img src="https://ugc.pokevision.com/images/pokemon/` + i + `.png" title="` + App.home.pokedex[i] + `" alt="` + i + `" class="z_filterIcon` + (isFilteredForNotify(i) ? " selected" : "") + `" />
         `;
     }
-    
+
     content += `
             <p><button id="saveSettings">Save and Close</button></p>
         </div>
@@ -81,8 +80,7 @@ $(document).ready(function() {
         $("#z_overlay").toggleClass("on");
         persistSettings();
     });
-
-});
+}
 
 function autoScan() {
     console.log("Scanning...");
