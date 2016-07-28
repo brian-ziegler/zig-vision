@@ -33,6 +33,21 @@
 }
 
 .z_filterIcon.selected {
-    background-color : rgba(55,55,111,.5);;
+    background-color : rgba(55,55,111,.5);
     opacity: .5;
+}
+
+.z_toggle {
+    padding-left: 30px;
+    background: url('images/toggle_off.png') no-repeat;
+}
+
+.z_toggle.on {
+    background: url('images/toggle_on.png') no-repeat;
+}
+
+.z_contentContainer {
+    position: absolute;
+    top: -10px;
+    left: 250px;
 }

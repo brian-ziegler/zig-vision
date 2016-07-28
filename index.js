@@ -13,11 +13,21 @@ if (!notifyFilter) notifyFilter = "|";
 
 $(document).ready(function() {
 
-    var contentToAppend = `
+    $("head").append(`
         <script src="https://rawgit.com/kylefox/jquery-modal/master/jquery.modal.min.js" type="text/javascript" charset="utf-8"></script>
         <link rel="stylesheet" href="https://rawgit.com/kylefox/jquery-modal/master/jquery.modal.css" type="text/css" media="screen" />
-        <link rel="stylesheet" href="https://rawgit.com/brian-ziegler/zig-vision/master/index.css" type="text/css" media="screen" />
-        <button id='autoScan' onclick='toggleAutoScan()' class='z_button off'>Auto Scan</button>
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+    `);
+
+    var contentToAppend = `
+        <div class="z_contentContainer">
+            <a href="#" class="z_toggle autoScan">Auto Scan</a><br/>
+            <a href="#" class="z_toggle notify">Notifications</a>
+        </div>
+    `;
+    /*    <button id='autoScan' onclick='toggleAutoScan()' class='z_button off'>Auto Scan</button>
         <button id='notify' onclick='toggleNotify()' class='z_button off'>Pushbullet</button>
         <a href="#z_settings" rel="modal:open">Settings</a>
         <div id="z_settings" style="display:none;">
@@ -35,40 +45,33 @@ $(document).ready(function() {
     contentToAppend += `
             <p><button onclick='saveAndCloseSettings()' class='z_button off'>Save and Close</button></p>
         </div>
-    `;
+    `;*/
     $(".header-logo").after(contentToAppend);
+
+    $(".z_toggle.autoScan").click(function () {
+        $(this).toggleClass("on");
+        if ($(this).hasClass("on")) {
+            console.log("Starting Auto Scan");
+            autoScan();
+        } else {
+            console.log("Stoping Auto Scan");
+            clearTimeout(autoScanThread);
+        }
+    })
+
+    $(".z_toggle.notify").click(function () {
+        $(this).toggleClass("on");
+        if ($(this).hasClass("on")) {
+            console.log("Starting Notifications");
+            checkForUnregisteredPokemon();
+        } else {
+            console.log("Stoping Notifications");
+            clearTimeout(checkPokemonThread);
+        }
+    })
 
 });
 
-function toggleAutoScan() {
-    var button = $("#autoScan");
-    if (button.hasClass("on")) {
-        console.log("Stoping Auto Scan");
-        clearTimeout(autoScanThread);
-        button.removeClass("on");
-        button.addClass("off");
-    } else {
-        console.log("Starting Auto Scan");
-        autoScan();
-        button.removeClass("off");
-        button.addClass("on");
-    }
-}
-
-function toggleNotify() {
-    var button = $("#notify");
-    if (button.hasClass("on")) {
-        console.log("Stoping Notifications");
-        clearTimeout(checkPokemonThread);
-        button.removeClass("on");
-        button.addClass("off");
-    } else {
-        console.log("Starting Notifications");
-        checkForUnregisteredPokemon();
-        button.removeClass("off");
-        button.addClass("on");
-    }
-}
 
 function toggleNotifyFilter(pokemonId) {
     if (isFilteredForNotify(pokemonId)) {
