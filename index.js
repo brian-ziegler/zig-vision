@@ -13,40 +13,31 @@ if (!notifyFilter) notifyFilter = "|";
 
 $(document).ready(function() {
 
-    $("head").append(`
-        <script src="https://rawgit.com/kylefox/jquery-modal/master/jquery.modal.min.js" type="text/javascript" charset="utf-8"></script>
-        <link rel="stylesheet" href="https://rawgit.com/kylefox/jquery-modal/master/jquery.modal.css" type="text/css" media="screen" />
-
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-        <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-    `);
-
-    var contentToAppend = `
-        <div class="z_contentContainer">
-            <a href="#" class="z_toggle autoScan">Auto Scan</a><br/>
-            <a href="#" class="z_toggle notify">Notifications</a>
+    var content = `
+        <div id="z_contentContainer">
+            <a class="z_toggle autoScan">Auto Scan</a><br>
+            <a class="z_toggle notify">Notifications</a><br>
+            <a id="openSettings">Settings</a>
         </div>
-    `;
-    /*    <button id='autoScan' onclick='toggleAutoScan()' class='z_button off'>Auto Scan</button>
-        <button id='notify' onclick='toggleNotify()' class='z_button off'>Pushbullet</button>
-        <a href="#z_settings" rel="modal:open">Settings</a>
-        <div id="z_settings" style="display:none;">
-            <p><b>Auth Key:</b><br><input id="pushBulletKey" type="text" value="` + pushBulletKey + `" /></p>
+        <div id="z_settings" title="Settings">
+            <p><b>Pushbullet Auth Key:</b><br><input id="pushBulletKey" type="text" value="` + pushBulletKey + `" /></p>
             <p><b>Notification Radius (meters):</b><br><input id="maxNotifyDistance" type="text" value="` + maxNotifyDistance + `" /></p>
-            <p><b>Notification Filter:</b><br>`;
+            <p><b>Notification Filter:</b><br>
+    `;
 
     for (var i = 1; i <= 151; i++ ) {
-        contentToAppend += `
-            <span onclick="toggleNotifyFilter(` + i + `)">
-                <img src="https://ugc.pokevision.com/images/pokemon/` + i + `.png" class="z_filterIcon p` + i + (isFilteredForNotify(i) ? " selected" : "") + `" />
-            </span>`;
+        content += `
+            <img src="https://ugc.pokevision.com/images/pokemon/` + i + `.png" title="` + App.home.pokedex[i] + `" alt="` + i + `" class="z_filterIcon` + (isFilteredForNotify(i) ? " selected" : "") + `" />
+        `;
     }
-
-    contentToAppend += `
-            <p><button onclick='saveAndCloseSettings()' class='z_button off'>Save and Close</button></p>
+    
+    content += `
+            <p><button id="saveSettings">Save and Close</button></p>
         </div>
-    `;*/
-    $(".header-logo").after(contentToAppend);
+        <div id="z_overlay"></div>
+    `;
+
+    $("body").append(content);
 
     $(".z_toggle.autoScan").click(function () {
         $(this).toggleClass("on");
@@ -70,18 +61,28 @@ $(document).ready(function() {
         }
     })
 
+    $(".z_filterIcon").click(function () {
+        var pokemonId = this.alt;
+        $(this).toggleClass("selected");
+        if ($(this).hasClass("selected")) {
+            notifyFilter += pokemonId + "|";
+        } else {
+            notifyFilter = notifyFilter.replace("|" + pokemonId + "|", "|");
+        }
+    });
+
+    $("#openSettings").click(function () {
+        $("#z_settings").toggleClass("on");
+        $("#z_overlay").toggleClass("on");
+    });
+
+    $("#saveSettings").click(function () {
+        $("#z_settings").toggleClass("on");
+        $("#z_overlay").toggleClass("on");
+        persistSettings();
+    });
+
 });
-
-
-function toggleNotifyFilter(pokemonId) {
-    if (isFilteredForNotify(pokemonId)) {
-        $(".z_filterIcon.p" + pokemonId).removeClass("selected");
-        notifyFilter = notifyFilter.replace("|" + pokemonId + "|", "|");
-    } else {
-        $(".z_filterIcon.p" + pokemonId).addClass("selected");
-        notifyFilter += pokemonId + "|";
-    }
-}
 
 function autoScan() {
     console.log("Scanning...");
@@ -172,17 +173,13 @@ function calculateDistance(lat1, lat2, lon1, lon2) {
     return R * Math.sqrt((deltaLat * deltaLat) + (deltaLon * deltaLon));
 }
 
-function saveAndCloseSettings() {
-    pushBulletKey = $("div.jquery-modal #pushBulletKey").val();
-    $("#pushBulletKey").val(pushBulletKey);
+function persistSettings() {
+    pushBulletKey = $("#pushBulletKey").val();
     localStorage.setItem("pushBulletKey", pushBulletKey);
 
-    maxNotifyDistance = $("div.jquery-modal #maxNotifyDistance").val();
-    $("#maxNotifyDistance").val(maxNotifyDistance);
+    maxNotifyDistance = $("#maxNotifyDistance").val();
     localStorage.setItem("maxNotifyDistance", maxNotifyDistance);
 
     localStorage.setItem("notifyFilter", notifyFilter);
-
-    $.modal.close();
 }
 
