@@ -1,0 +1,38 @@
+.z_button {
+    margin-left: 25px;
+    cursor : pointer;
+    border-style : solid;
+    border-width : 1px;
+    border-radius : 15px;
+    padding : 1px 15px;
+    box-shadow : 0 1px 4px rgba(0,0,0,.6);
+    font-size : 9.5pt;
+    font-weight : bold;
+    color : #fff;
+    text-shadow : 0 1px 3px rgba(0,0,0,.4);
+    font-family : sans-serif;
+    text-decoration : none;
+}
+
+.z_button.off {
+    border-color : #2989d8;
+    background: #2989d8;
+}
+
+.z_button.on {
+    border-color: #8fc800;
+    background: #8fc800;
+}
+
+.z_filterIcon {
+    cursor : pointer;
+    border: 1px solid black;
+    border-radius : 8px;
+    height: 48px;
+    width: 48px;
+}
+
+.z_filterIcon.selected {
+    background-color : rgba(55,55,111,.5);;
+    opacity: .5;
+}
