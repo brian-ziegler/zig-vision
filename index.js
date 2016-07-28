@@ -16,6 +16,7 @@ $(document).ready(function() {
     var contentToAppend = `
         <script src="https://rawgit.com/kylefox/jquery-modal/master/jquery.modal.min.js" type="text/javascript" charset="utf-8"></script>
         <link rel="stylesheet" href="https://rawgit.com/kylefox/jquery-modal/master/jquery.modal.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="https://rawgit.com/brian-ziegler/zig-vision/master/index.css" type="text/css" media="screen" />
         <button id='autoScan' onclick='toggleAutoScan()' class='z_button off'>Auto Scan</button>
         <button id='notify' onclick='toggleNotify()' class='z_button off'>Pushbullet</button>
         <a href="#z_settings" rel="modal:open">Settings</a>
