@@ -81,6 +81,7 @@ function z_loadContent() {
         persistSettings();
     });
 }
+z_loadContent();
 
 function autoScan() {
     console.log("Scanning...");
