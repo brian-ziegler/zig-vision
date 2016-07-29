@@ -23,7 +23,7 @@ var notifyCircle = L.circle(
 
 var scanCircle = L.circle(
     [App.home.latitude, App.home.longitude],
-    200,
+    125,
     {
         color: "#999"
     }
