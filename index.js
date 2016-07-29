@@ -21,8 +21,19 @@ var notifyCircle = L.circle(
     }
 );
 
+var scanCircle = L.circle(
+    [App.home.latitude, App.home.longitude],
+    200,
+    {
+        fill: false,
+        color: "#0FF",
+        dashArray: "1, 6"
+    }
+);
+
 App.home.map.on('click', function(t) {
     notifyCircle.setLatLng(t.latlng);
+    scanCircle.setLatLng(t.latlng);
 });
 
 function z_loadContent() {
@@ -57,9 +68,11 @@ function z_loadContent() {
         if ($(this).hasClass("on")) {
             console.log("Starting Auto Scan");
             autoScan();
+            scanCircle.addTo(App.home.map);
         } else {
             console.log("Stoping Auto Scan");
             clearTimeout(autoScanThread);
+            App.home.map.removeLayer(scanCircle);
         }
     })
 
