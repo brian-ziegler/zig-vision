@@ -25,9 +25,7 @@ var scanCircle = L.circle(
     [App.home.latitude, App.home.longitude],
     200,
     {
-        fill: false,
-        color: "#0FF",
-        dashArray: "1, 6"
+        color: "#999"
     }
 );
 
