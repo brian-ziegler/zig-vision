@@ -11,6 +11,20 @@ if (!maxNotifyDistance) maxNotifyDistance = "250";
 var notifyFilter = localStorage.getItem("notifyFilter");
 if (!notifyFilter) notifyFilter = "|";
 
+var notifyCircle = L.circle(
+    [App.home.latitude, App.home.longitude],
+    maxNotifyDistance,
+    {
+        fill: false,
+        color: "#F00",
+        dashArray: "1, 12"
+    }
+);
+
+App.home.map.on('click', function(t) {
+    notifyCircle.setLatLng(t.latlng.lat);
+});
+
 function z_loadContent() {
     var content = `
         <div id="z_contentContainer">
@@ -54,9 +68,11 @@ function z_loadContent() {
         if ($(this).hasClass("on")) {
             console.log("Starting Notifications");
             checkForUnregisteredPokemon();
+            notifyCircle.addTo(App.home.map);
         } else {
             console.log("Stoping Notifications");
             clearTimeout(checkPokemonThread);
+            App.home.map.removeLayer(notifyCircle);
         }
     })
 
@@ -172,12 +188,23 @@ function calculateDistance(lat1, lat2, lon1, lon2) {
     return R * Math.sqrt((deltaLat * deltaLat) + (deltaLon * deltaLon));
 }
 
+function calculateCoords(lat1, lon1, degrees, numMeters) {
+    var R = 6371e3;
+    var heading = degrees * Math.PI / 180;
+    var deltaLat = numMeters / R * Math.sin(heading);
+    var lat2 = (deltaLat / Math.PI * 180) + lat1;
+    var deltaLon = numMeters / R * Math.cos(heading);
+    var lon2 = (deltaLon / Math.cos((lat2 + lat1) / 2 * Math.PI / 180) / Math.PI * 180) + lon1;
+    return {lat: lat2, lon: lon2};
+}
+
 function persistSettings() {
     pushBulletKey = $("#pushBulletKey").val();
     localStorage.setItem("pushBulletKey", pushBulletKey);
 
     maxNotifyDistance = $("#maxNotifyDistance").val();
     localStorage.setItem("maxNotifyDistance", maxNotifyDistance);
+    notifyCircle.setRadius(maxNotifyDistance);
 
     localStorage.setItem("notifyFilter", notifyFilter);
 }
