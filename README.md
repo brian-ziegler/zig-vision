@@ -1,7 +1,6 @@
 # zig-vision
 
 ### Bookmarklet
-
 ```
 javascript:(function(){
     $("head").append("
@@ -11,4 +10,11 @@ javascript:(function(){
 })();
 ```
 
+### Dev Bookmarklet
+```
+javascript:{
+    $("head").append("<link rel='stylesheet' href='https://rawgit.com/brian-ziegler/zig-vision/master/index.css' type='text/css' />");
+<<< Insert JS Code Here >>> 
+};void(0);
+```
 

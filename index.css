@@ -39,7 +39,7 @@
 
 #z_settings {
     position: absolute;
-    height: 800px;
+    height: 925px;
     width: 530px;
     top: 20px;
     left: 50%;
@@ -53,6 +53,14 @@
 
 #z_settings.on {
     visibility: visible;
+}
+
+#autoScanFreq {
+    width: 50px;
+}
+
+#scanPoints {
+    width: 475px;
 }
 
 #pushBulletKey {
