@@ -116,7 +116,7 @@ function processUnregisteredPokemon(pokemon) {
     var distance = calculateDistance(App.home.latitude, pokemon.latitude, App.home.longitude, pokemon.longitude);
     if (distance > maxNotifyDistance) return;
 
-    if (isFilteredForNotify(pokemon.pokemonId)) {
+    if (!isFilteredForNotify(pokemon.pokemonId)) {
         console.log(pokemon);
         var title = App.home.pokedex[pokemon.pokemonId] + " :: " + formatTime(pokemon.expiration_time * 1000);
         var body = "https://pokevision.com/#/@" + pokemon.latitude + "," + pokemon.longitude;
