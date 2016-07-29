@@ -33,7 +33,7 @@ var notifyCircle = L.circle(
     }
 );
 
-var scanCircles;
+var scanCircles = [];
 for (var i = 0; i < scanPoints.length; i++) {
     var latLng = calculateCoords({lat: App.home.latitude, lng: App.home.longitude}, scanPoints[i].deg, scanPoints[i].dist);
     scanCircles.push(L.circle(latLng, observedScanRadius, {color: "#999"}));
