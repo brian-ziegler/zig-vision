@@ -22,7 +22,7 @@ var notifyCircle = L.circle(
 );
 
 App.home.map.on('click', function(t) {
-    notifyCircle.setLatLng(t.latlng.lat);
+    notifyCircle.setLatLng(t.latlng);
 });
 
 function z_loadContent() {
