@@ -113,7 +113,7 @@ z_loadContent();
 function autoScan() {
     console.log("Scanning...");
     App.home.findNearbyPokemon(App.home.latitude, App.home.longitude, true);
-    autoScanThread = setTimeout(autoScan, 31000);
+    autoScanThread = setTimeout(autoScan, 10500);
 }
 
 function checkForUnregisteredPokemon() {
