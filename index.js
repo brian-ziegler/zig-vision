@@ -1,6 +1,18 @@
 var autoScanThread;
 var checkPokemonThread;
 var pokemonRegistry = [];
+var observedScanRadius = 125;
+var autoScanWait = 12000;
+var scanPoints = [
+    {deg: 0, dist: 0},
+    {deg: 0, dist: 216.5},
+    {deg: 60, dist: 216.5},
+    {deg: 120, dist: 216.5},
+    {deg: 180, dist: 216.5},
+    {deg: 240, dist: 216.5},
+    {deg: 300, dist: 216.5}
+];
+var lastScanIndex = -1;
 
 var pushBulletKey = localStorage.getItem("pushBulletKey");
 if (!pushBulletKey) pushBulletKey = "";
@@ -21,18 +33,25 @@ var notifyCircle = L.circle(
     }
 );
 
-var scanCircle = L.circle(
-    [App.home.latitude, App.home.longitude],
-    125,
-    {
-        color: "#999"
-    }
-);
+var scanCircles;
+for (var i = 0; i < scanPoints.length; i++) {
+    var latLng = calculateCoords({lat: App.home.latitude, lng: App.home.longitude}, scanPoints[i].deg, scanPoints[i].dist);
+    scanCircles.push(L.circle(latLng, observedScanRadius, {color: "#999"}));
+}
 
 App.home.map.on('click', function(t) {
     notifyCircle.setLatLng(t.latlng);
-    scanCircle.setLatLng(t.latlng);
+    moveScanCircles(t.latlng);
 });
+
+function moveScanCircles(newOrigin) {
+    setScanCircleColor(lastScanIndex, "#999");
+    for (var i = 0; i < scanPoints.length; i++) {
+        var latLng = calculateCoords(newOrigin, scanPoints[i].deg, scanPoints[i].dist);
+        scanCircles[i].setLatLng(latLng);
+    }
+    lastScanIndex = -1;
+}
 
 function z_loadContent() {
     var content = `
@@ -66,11 +85,15 @@ function z_loadContent() {
         if ($(this).hasClass("on")) {
             console.log("Starting Auto Scan");
             autoScan();
-            scanCircle.addTo(App.home.map);
+            for (var i = 0; i < scanCircles.length; i++) {
+                scanCircles[i].addTo(App.home.map);
+            }
         } else {
             console.log("Stoping Auto Scan");
             clearTimeout(autoScanThread);
-            App.home.map.removeLayer(scanCircle);
+            for (var i = 0; i < scanCircles.length; i++) {
+                App.home.map.removeLayer(scanCircles[i]);
+            }
         }
     })
 
@@ -112,8 +135,23 @@ z_loadContent();
 
 function autoScan() {
     console.log("Scanning...");
-    App.home.findNearbyPokemon(App.home.latitude, App.home.longitude, true);
-    autoScanThread = setTimeout(autoScan, 10500);
+
+    setScanCircleColor(lastScanIndex, "#999");
+
+    lastScanIndex += 1;
+    if (lastScanIndex >= scanCircles.length) lastScanIndex = 0;
+
+    setScanCircleColor(lastScanIndex, "#99D");
+
+    var latLng = scanCircles[lastScanIndex].getLatLng();
+    App.home.findNearbyPokemon(latLng.lat, latLng.lng, true);
+    autoScanThread = setTimeout(autoScan, autoScanWait);
+}
+
+function setScanCircleColor(index, color) {
+    if (scanCircles[index]) {
+        scanCircles[index].setStyle({color: color});
+    }
 }
 
 function checkForUnregisteredPokemon() {
@@ -199,14 +237,14 @@ function calculateDistance(lat1, lat2, lon1, lon2) {
     return R * Math.sqrt((deltaLat * deltaLat) + (deltaLon * deltaLon));
 }
 
-function calculateCoords(lat1, lon1, degrees, numMeters) {
+function calculateCoords(latLng, degrees, numMeters) {
     var R = 6371e3;
     var heading = degrees * Math.PI / 180;
     var deltaLat = numMeters / R * Math.sin(heading);
-    var lat2 = (deltaLat / Math.PI * 180) + lat1;
+    var lat = (deltaLat / Math.PI * 180) + latLng.lat;
     var deltaLon = numMeters / R * Math.cos(heading);
-    var lon2 = (deltaLon / Math.cos((lat2 + lat1) / 2 * Math.PI / 180) / Math.PI * 180) + lon1;
-    return {lat: lat2, lon: lon2};
+    var lng = (deltaLon / Math.cos((lat + latLng.lat) / 2 * Math.PI / 180) / Math.PI * 180) + latLng.lng;
+    return {lat: lat, lng: lng};
 }
 
 function persistSettings() {
