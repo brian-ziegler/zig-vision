@@ -14,11 +14,11 @@ if (!notifyFilter) notifyFilter = "|";
 function z_loadContent() {
     var content = `
         <div id="z_contentContainer">
-            <a class="z_toggle autoScan">Auto Scan</a><br>
-            <a class="z_toggle notify">Notifications</a><br>
+            <a class="z_toggle autoScan">Auto Scan</a>
+            <a class="z_toggle notify">Notifications</a>
             <a id="openSettings">Settings</a>
         </div>
-        <div id="z_settings" title="Settings">
+        <div id="z_settings">
             <p><b>Pushbullet Auth Key:</b><br><input id="pushBulletKey" type="text" value="` + pushBulletKey + `" /></p>
             <p><b>Notification Radius (meters):</b><br><input id="maxNotifyDistance" type="text" value="` + maxNotifyDistance + `" /></p>
             <p><b>Notification Filter:</b><br>
