@@ -5,10 +5,11 @@ var scanCircles = [];
 
 var checkPokemonThread;
 var pokemonRegistry = [];
+var pokemonCount = {};
 var notifyCircle;
 
 var autoScanFreq = localStorage.getItem("autoScanFreq");
-if (!autoScanFreq) autoScanFreq = 12;
+if (!autoScanFreq) autoScanFreq = 30;
 
 var scanPoints = JSON.parse(localStorage.getItem("scanPoints"));
 if (!scanPoints) scanPoints = [
@@ -181,16 +182,39 @@ function checkForUnregisteredPokemon() {
 }
 
 function registryContains(pokemon) {
-    for (var i = 0; i < this.pokemonRegistry.length; i++) {
+    for (var i = this.pokemonRegistry.length - 1; i >= 0; i--) {
         var registeredPokemon = this.pokemonRegistry[i];
         if (pokemon.pokemonId === registeredPokemon.pokemonId &&
             pokemon.latitude === registeredPokemon.latitude &&
             pokemon.longitude === registeredPokemon.longitude &&
             (pokemon.expiration_time - registeredPokemon.expiration_time) < 5) {
             return true;
+        } else if ((registeredPokemon.expiration_time * 1000) < Date.now()) {
+            this.pokemonRegistry.splice(i, 1);
         }
     }
     return false;
+}
+
+function incrementPokemonCount(pokemonId) {
+    if (pokemonCount[pokemonId]) pokemonCount[pokemonId]++;
+    else pokemonCount[pokemonId] = 1;
+}
+
+function report() {
+    var totalPokemon = 0;
+    var reportItems = [];
+    for (var pokemonId in pokemonCount) {
+        totalPokemon += pokemonCount[pokemonId];
+        reportItems.push({name: App.home.pokedex[pokemonId], count: pokemonCount[pokemonId]})
+    }
+    reportItems.sort(function(a, b) {
+        return b.count - a.count;
+    });
+    console.log(totalPokemon + " total pokemon found!");
+    for (var i = 0; i < reportItems.length; i++) {
+        console.log(reportItems[i].name + " :: " + reportItems[i].count + " :: " + (reportItems[i].count / totalPokemon * 100).toFixed(1) + "%");
+    }
 }
 
 function processUnregisteredPokemon(pokemon) {
@@ -204,6 +228,7 @@ function processUnregisteredPokemon(pokemon) {
         sendNotification(title, body);
     }
 
+    incrementPokemonCount(pokemon.pokemonId);
     pokemonRegistry.push(pokemon);
 }
 
