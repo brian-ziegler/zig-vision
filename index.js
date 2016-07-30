@@ -185,7 +185,8 @@ function registryContains(pokemon) {
         var registeredPokemon = this.pokemonRegistry[i];
         if (pokemon.pokemonId === registeredPokemon.pokemonId &&
             pokemon.latitude === registeredPokemon.latitude &&
-            pokemon.longitude === registeredPokemon.longitude) {
+            pokemon.longitude === registeredPokemon.longitude &&
+            (pokemon.expiration_time - registeredPokemon.expiration_time) < 5) {
             return true;
         }
     }
